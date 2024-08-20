@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  db:
+    build: ./DB
+    container_name: my_postgres_db
+    environment:
+      POSTGRES_USER: elhazin
+      POSTGRES_PASSWORD: '123321'
+      POSTGRES_DB: db
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:
