@@ -3,6 +3,9 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import multer, { FileFilterCallback } from 'multer';
+const path = require('path');
+
 
 import helloRoute from './routes/login';
 import { Handle_email_check, Handle_email_confirmation, Handle_usernmae_availability } from './services/Handle_email_sending.services';
@@ -56,6 +59,33 @@ io.on('connection', (socket) => {
     Handle_usernmae_availability(socket, username);
   });
 });
+
+
+
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+      cb(null, 'uploads/');
+  },
+  filename: function (req, file, cb) {
+      cb(null, Date.now() + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ storage: storage });
+
+app.post('/upload', upload.any(), (req, res) => {
+  console.log('Files uploaded:', req.files);
+
+
+  res.send('Files uploaded successfully');
+});
+
+// Serve static files from 'uploads' directory (optional)
+app.use('/uploads', express.static('uploads'));
+
+
+
 
 server.listen(port, () => {
   console.log(`Server running on port ${port}`);

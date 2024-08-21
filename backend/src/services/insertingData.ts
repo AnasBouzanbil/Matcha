@@ -249,3 +249,29 @@ export async function UserNewInfo(Data: any, token: string) {
         throw new Error('User not found');
     }
 }
+
+
+
+
+
+
+
+
+
+export async function GetUsersBySimilarTag (token: string) {
+    const result = await db.query(`
+Select * from users where id in (select userid from preference where tagid in (select tagid from preference where userid = $1))`, [token]);
+    return result.rows;
+}
+
+export async function GetUsersBycloseLocation (token: string) {
+    const result = await db.query(`
+Select * from users where locations in (select locations from users where id = $1)`, [token]);
+    return result.rows;
+}
+
+export async function GetUsersByAge (token: string, minage: number, maxage: number) {
+    const result = await db.query(`
+    SELECT * FROM users where age >= $1 and age <= $2`, [minage, maxage]);
+    return result.rows;
+}

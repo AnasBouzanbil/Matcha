@@ -11,6 +11,9 @@
   "dependencies": {
     "@emotion/react": "^11.13.0",
     "@emotion/styled": "^11.13.0",
+    "@fortawesome/free-regular-svg-icons": "^6.6.0",
+    "@fortawesome/free-solid-svg-icons": "^6.6.0",
+    "@fortawesome/react-fontawesome": "^0.2.2",
     "@mui/material": "^5.16.7",
     "@nextui-org/navbar": "^2.0.33",
     "@nextui-org/react": "^2.4.2",
@@ -19,6 +22,7 @@
     "electron": "^31.3.0",
     "fs": "^0.0.1-security",
     "gsap": "^3.12.5",
+    "hammerjs": "^2.0.8",
     "lucide-react": "^0.427.0",
     "next": "14.2.5",
     "react": "^18",
