@@ -37,38 +37,6 @@ function Page() {
     };
 
     const Handle_Upload = async () => {
-        const token = localStorage.getItem('token');
-        try {
-            if (profilePic) {
-                const profileFormData = new FormData();
-                profileFormData.append('image', profilePic);
-                await axios.post('http://localhost:4000/api/profile', profileFormData, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        'Content-Type': 'multipart/form-data',
-                    },
-                });
-            }
-
-            // Upload other images
-            for (const file of files) {
-                if (file) {
-                    const formData = new FormData();
-                    formData.append('image', file);
-                    await axios.post('http://localhost:4000/api/upload', formData, {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            'Content-Type': 'multipart/form-data',
-                        },
-                    });
-                }
-            }
-            alert('Images and profile picture uploaded successfully!');
-            router.push('/profile');
-        } catch (error) {
-            console.error('Error uploading images:', error);
-            alert('Failed to upload images. Please try again.');
-        }
     };
 
     return (

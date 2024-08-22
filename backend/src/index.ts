@@ -7,6 +7,7 @@ import multer, { FileFilterCallback } from 'multer';
 const path = require('path');
 import express, { NextFunction, Request, Response } from 'express';
 
+import fs from 'fs';
 
 import helloRoute from './routes/login';
 import { Handle_email_check, Handle_email_confirmation, Handle_usernmae_availability } from './services/Handle_email_sending.services';
@@ -44,7 +45,6 @@ app.post('/otherinfo', async (req, res) => {
 
 
 app.post('/addtags', async (req, res) => {
-  console.log("heelllllllllllllll yea");
   Add_user_prefernce_tags(req, res);
 } );
 
@@ -62,58 +62,16 @@ io.on('connection', (socket) => {
   });
 });
 
-async function verifyToken(req: Request, res: Response, next: NextFunction) {
-  const authHeader = req.headers.authorization;
-  if (!authHeader) {
-      return res.status(401).json({ message: 'Authorization header missing' });
-  }
+
+
+app.post('/profile', (req: Request, res : Response)=>{
+
+})
+
+
+app.post('/uploads', (req: Request, res : Response)=>{
   
-  const token = authHeader.split(' ')[1];
-  
-  try {
-      await SearchForToken(token);
-  } catch (error) {
-      res.status(401).json({ message: 'Invalid token' });
-  }
-}
-
-const images_path = path.join(__dirname, 'images');
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, images_path);
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  },
-});
-
-const upload = multer({ storage });
-
-app.post('/api/upload', verifyToken, upload.single('image'), (req: Request, res: Response) => {
-  try {
-    console.log('Uploading image');
-    console.log(req.file?.filename);
-    Update_pictures(req.file?.filename, req.body.id);
-    res.status(200).json({ message: 'File uploaded successfully' });
-  } catch (error) {
-    console.error('Error uploading file:', error);
-    res.status(500).json({ message: 'Error uploading file' }); 
-  }
-});
-
-app.post('/api/profile', verifyToken, upload.single('image'), (req: Request, res: Response) => {
-  try {
-    console.log('Uploading profile picture');
-    console.log(req.file?.filename);
-    Update_photo_profile(req.file?.filename, req.body.id);
-    res.status(200).json({ message: 'Profile picture uploaded successfully' });
-  } catch (error) {
-    console.error('Error uploading profile picture:', error);
-    res.status(500).json({ message: 'Error uploading profile picture' });
-  }
-});
-
+})
 
 server.listen(port, () => {
   console.log(`Server running on port ${port}`);

@@ -2,7 +2,7 @@
 import { promises as fs } from 'fs';
 import { Socket } from 'socket.io';
 const db = require('./db');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcrypt/');
 import express, {Request, Response} from 'express';
 
 
@@ -77,12 +77,12 @@ export async function deleteToken_Mail(token: string) {
 
 
 export async function SearchForToken(token: string) {
-    console.log(token);
+    console.log("token is " + token);
     const result = await db.query('SELECT * FROM users WHERE id = $1', [token]);
     if (result.rows.length > 0) {
         return result.rows[0];
     } else {
-        throw new Error('User not found');
+        throw new Error('Token not found');
     }
 }
 
@@ -161,7 +161,7 @@ export async function UpdateUserPassword(Username: string, Password: string) {
         [hashedPassword, Username]
     );
     if (result.rowCount === 0) {
-        throw new Error('User not found');
+        throw new Error('Token assoicated with user not found for password update');
     } else {
         console.log('Password updated');
     }
@@ -173,7 +173,7 @@ export async function UpdateUserEmail(Username: string, Email: string) {
         [Email, Username]
     );
     if (result.rowCount === 0) {
-        throw new Error('User not found');
+        throw new Error('Token assoicated with user not found');
     }
 }
 
@@ -246,7 +246,7 @@ export async function UserNewInfo(Data: any, token: string) {
     );
 
     if (result.rowCount === 0) {
-        throw new Error('User not found');
+        throw new Error('Failed to update user info');
     }
 }
 
