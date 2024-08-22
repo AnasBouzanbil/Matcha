@@ -13,6 +13,7 @@ export function Navbar() {
     const buttonRef = useRef<HTMLDivElement>(null);
     const menuRef = useRef<HTMLDivElement>(null);
     const backToTopRef = useRef<HTMLDivElement>(null);
+    const router = useRouter();
   
     useEffect(() => {
       const handleNavButtonClick = () => {
@@ -93,8 +94,11 @@ export function Navbar() {
                 </a>
               </li>
               <li className="navbar-item no-mob">
-                <a className="navbar-item-inner" href="#">
-                  <span><i className="uil uil-shopping-bag"></i> Store</span>
+                <a className="navbar-item-inner" onClick={()=>{
+
+                  router.push('/welcome');
+                }}>
+                  <span><i className="uil uil-shopping-bag"></i> SIgn up</span>
                 </a>
               </li>
               <li className="navbar-item">

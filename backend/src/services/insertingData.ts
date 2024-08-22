@@ -144,7 +144,7 @@ export async function ifUserUsernameExist(username: string) {
 export async function set_user_Tags(tags: string[], token: string) {
     for (let i = 0; i < tags.length; i++) {
         const result = await db.query(
-            'INSERT INTO preference (userid, tagid) VALUES ($1, (SELECT id FROM tags WHERE tagname = $2))',
+            'INSERT INTO Preference (userid, tagid) VALUES ($1, (SELECT id FROM tags WHERE tagname = $2))',
             [token, tags[i]]
         );
         console.log(result.rows);
@@ -260,7 +260,7 @@ export async function UserNewInfo(Data: any, token: string) {
 
 export async function GetUsersBySimilarTag (token: string) {
     const result = await db.query(`
-Select * from users where id in (select userid from preference where tagid in (select tagid from preference where userid = $1))`, [token]);
+Select * from users where id in (select userid from Preference where tagid in (select tagid from Preference where userid = $1))`, [token]);
     return result.rows;
 }
 
@@ -274,4 +274,29 @@ export async function GetUsersByAge (token: string, minage: number, maxage: numb
     const result = await db.query(`
     SELECT * FROM users where age >= $1 and age <= $2`, [minage, maxage]);
     return result.rows;
+}
+
+
+
+
+
+
+
+
+
+export async function Update_photo_profile(token: string, photo: string) {
+    const result = await db.query('UPDATE users SET profileimg = $1 WHERE id = $2', [photo, token]);
+    if (result.rowCount === 0) {
+        throw new Error('User not found');
+    }
+}
+
+
+export async function Update_pictures(token: string, pictures: string) {
+        const result = await db.query(
+            'INSERT INTO Pictures (userid, picture) VALUES ($1, $2)',
+            [token, pictures]
+        );
+        console.log(result.rows);
+    
 }

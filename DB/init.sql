@@ -1,4 +1,4 @@
-CREATE TABLE Users (
+CREATE TABLE IF NOT EXISTS Users (
     id SERIAL PRIMARY KEY,
     FirstName VARCHAR(20),
     LastName VARCHAR(20),
@@ -10,28 +10,34 @@ CREATE TABLE Users (
     gender VARCHAR(6),
     age INT,
     gender_preference VARCHAR(100),
-    bio VARCHAR(255)
+    bio VARCHAR(255),
+    profileimg TEXT
 );
 
-CREATE TABLE Friend (
+-- Create Pictures table
+CREATE TABLE IF NOT EXISTS Pictures (
+    id SERIAL PRIMARY KEY,
+    userid INT REFERENCES Users(id),
+    img_path TEXT
+);
+
+-- Create Friend table
+CREATE TABLE IF NOT EXISTS Friend (
     id SERIAL PRIMARY KEY,
     user_id INT REFERENCES Users(id),
-    friend_id INT
+    friend_id INT REFERENCES Users(id)
 );
 
-CREATE TABLE Lovers (
+-- Create Lovers table
+CREATE TABLE IF NOT EXISTS Lovers (
     id SERIAL PRIMARY KEY,
     user1_id INT REFERENCES Users(id),
     user2_id INT REFERENCES Users(id)
 );
 
-CREATE TABLE Preference (
-    id SERIAL PRIMARY KEY,
-    TagId INT,
-    userId INT
-);
 
-CREATE TABLE Chat (
+-- Create Chat table
+CREATE TABLE IF NOT EXISTS Chat (
     id SERIAL PRIMARY KEY,
     user1_id INT REFERENCES Users(id),
     user2_id INT REFERENCES Users(id),
@@ -39,10 +45,20 @@ CREATE TABLE Chat (
     timestamp TIMESTAMP
 );
 
-CREATE TABLE Tags (
+-- Create Tags table
+CREATE TABLE IF NOT EXISTS Tags (
     id SERIAL PRIMARY KEY,
     TagName VARCHAR(20)
 );
+
+
+-- Create Preference table
+CREATE TABLE IF NOT EXISTS Preference (
+    id SERIAL PRIMARY KEY,
+    TagId INT REFERENCES Tags(id),
+    userId INT REFERENCES Users(id)
+);
+
 
 INSERT INTO Tags (TagName) VALUES ('Humor');
 INSERT INTO Tags (TagName) VALUES ('Fun');

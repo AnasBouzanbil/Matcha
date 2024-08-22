@@ -102,7 +102,7 @@ const InterestsComponent = () => {
 
       if (response.ok) {
         alert('User preferences updated successfully');
-        router.push('/profile');
+        router.push('/upload_images');
         
       } else {
         throw new Error('Failed to update user preferences');

@@ -1,32 +1,15 @@
-
-'use client'
-
-
-
-
-
-
-
-
-
-
+'use client';
 
 import './page.css';
-
 import axios from 'axios';
-
-
-
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 function Page() {
-    const [images, setImages] = useState<string[]>([
-        'http://digital-art-gallery.com/oid/0/1300x648_403_Knight_by_the_lake_2d_fantasy_knight_lake_warrior_picture_image_digital_art.jpg',
-        'http://orig09.deviantart.net/2a38/f/2012/272/8/1/swamp_dragon_by_schur-d5g96rw.jpg',
-        'http://img05.deviantart.net/d3d4/i/2013/109/d/6/cavalry_knights_by_artnothearts-d62b1vs.jpg',
-        'http://img05.deviantart.net/d3d4/i/2013/109/d/6/cavalry_knights_by_artnothearts-d62b1vs.jpg',
-        'http://img05.deviantart.net/d3d4/i/2013/109/d/6/cavalry_knights_by_artnothearts-d62b1vs.jpg',
-    ]);
+    const [images, setImages] = useState<string[]>(['', '', '', '', '']);
+    const [files, setFiles] = useState<File[]>([]);
+    const [profilePic, setProfilePic] = useState<File | null>(null);
+    const router = useRouter();
 
     const handleFileChange = (index: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -35,46 +18,80 @@ function Page() {
             reader.onload = (e) => {
                 if (e.target?.result) {
                     const newImages = [...images];
+                    const newFiles = [...files];
                     newImages[index] = e.target.result as string;
+                    newFiles[index] = file;
                     setImages(newImages);
+                    setFiles(newFiles);
                 }
             };
             reader.readAsDataURL(file);
         }
     };
 
-    const Handle_Upload = async () => {
-        const formData = new FormData();
-        images.forEach((image, index) => {
-            // Convert base64 to Blob
-            fetch(image)
-                .then(res => res.blob())
-                .then(blob => {
-                    formData.append(`image-${index}`, blob, `image-${index}.jpg`);
-                })
-                .finally(() => {
-                    if (index === images.length - 1) {
-                        // Upload the formData only after all images are added
-                        axios.post('http://localhost:4000/upload', formData, {
-                            headers: {
-                                'Content-Type': 'multipart/form-data',
-                            },
-                        })
-                        .then(() => {
-                            alert('Image uploaded successfully!');
-                        })
-                        .catch(error => {
-                            console.error('Error uploading the image:', error);
-                            alert('Failed to upload image.');
-                        });
-                    }
-                });
-        });
+    const handleProfilePicChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            setProfilePic(file);
+        }
     };
-    
+
+    const Handle_Upload = async () => {
+        const token = localStorage.getItem('token');
+        try {
+            if (profilePic) {
+                const profileFormData = new FormData();
+                profileFormData.append('image', profilePic);
+                await axios.post('http://localhost:4000/api/profile', profileFormData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'multipart/form-data',
+                    },
+                });
+            }
+
+            // Upload other images
+            for (const file of files) {
+                if (file) {
+                    const formData = new FormData();
+                    formData.append('image', file);
+                    await axios.post('http://localhost:4000/api/upload', formData, {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            'Content-Type': 'multipart/form-data',
+                        },
+                    });
+                }
+            }
+            alert('Images and profile picture uploaded successfully!');
+            router.push('/profile');
+        } catch (error) {
+            console.error('Error uploading images:', error);
+            alert('Failed to upload images. Please try again.');
+        }
+    };
 
     return (
         <div className="row">
+            <div className="small-12 large-4 columns">
+                <div className="containers">
+                    <div className="imageWrapper">
+                        {profilePic ? (
+                            <img className="image" src={URL.createObjectURL(profilePic)} alt="profile" />
+                        ) : (
+                            <div className="placeholder">No Profile Picture</div>
+                        )}
+                    </div>
+                </div>
+                <button className="file-upload">
+                    <input
+                        type="file"
+                        className="file-input"
+                        onChange={handleProfilePicChange}
+                    />
+                    Choose Profile Picture
+                </button>
+            </div>
             {images.map((image, index) => (
                 <div key={index} className="small-12 large-4 columns">
                     <div className="containers">
@@ -100,6 +117,5 @@ function Page() {
         </div>
     );
 }
-
 
 export default Page;
