@@ -1,5 +1,13 @@
 import nodemailer from 'nodemailer';
 
+
+
+
+
+
+
+
+
 const transporter = nodemailer.createTransport({
     service: 'hotmail',
     auth: {
@@ -7,4 +15,6 @@ const transporter = nodemailer.createTransport({
         pass: '********'
     },
 });
+
+
 export default transporter;

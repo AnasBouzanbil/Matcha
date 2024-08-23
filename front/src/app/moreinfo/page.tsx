@@ -87,7 +87,7 @@ const InterestsComponent = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:4000/addtags', {
+      var response = await fetch('http://localhost:4000/datawithtags', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -95,17 +95,18 @@ const InterestsComponent = () => {
         body: JSON.stringify({
           token,
           tags: selectedInterests,
-          phonenumber: phoneNumber,
+          phoneNumber : phoneNumber,
           location : location,
+
         }),
       });
-
+      
       if (response.ok) {
         alert('User preferences updated successfully');
         router.push('/upload_images');
         
       } else {
-        throw new Error('Failed to update user preferences');
+        throw new Error('Failed to update user preferences '   + response.status + ' ' + response.statusText);
       }
     } catch (error) {
       alert(error);
@@ -246,7 +247,7 @@ export function BasicInfo({ setIsSignUp }: BasicInfoProps) {
     else
       OtherGender = 'male'
     try {
-      axios.post('http://localhost:4000/otherinfo', {
+      axios.post('http://localhost:4000/userinfo', {
         age: age,
         gender: gender,
         bio: bio,

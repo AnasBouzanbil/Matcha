@@ -221,7 +221,7 @@ const SignupSide: React.FC = () => {
             password: formData.get('password'),
         };
         console.log(data);
-        axios.post('http://localhost:4000/signup', data)
+        axios.post('http://localhost:4000/user', data)
             .then(response => {
                 if (response.status === 200) {
                     alert('done');

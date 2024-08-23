@@ -1,77 +1,17 @@
 
 import { promises as fs } from 'fs';
 import { Socket } from 'socket.io';
-const db = require('./db');
+import db from '../conf/db.conf';
+
 const bcrypt = require('bcrypt/');
 import express, {Request, Response} from 'express';
 
 
 
-var MapSocket_tokens = new Map<string, Socket>();
 
 
 const file_path ="../DB/db.json";
 
-interface Mail {
-    mail: string;
-    token: string;
-}
-
-async function readMailsFromFile() {
-    const data = await fs.readFile(file_path, 'utf-8');
-    return JSON.parse(data);
-}
- 
-export async function setToken_Mail(token: string, mail: string, socket: any) {
-    const jsonContent = await readMailsFromFile();
-    const newMail: Mail = {
-        mail: mail,
-        token: token
-    };
-    MapSocket_tokens.set(token, socket);
-    jsonContent.push(newMail);
-    await fs.writeFile(file_path, JSON.stringify(jsonContent, null, 2));
-}
-
-export async function IfMail_Exist(mail: string) {
-    const jsonContent = await readMailsFromFile();
-    const obj = jsonContent.find((obj: any) => obj.mail === mail);
-    if (obj) {
-        return obj;
-    } else {
-        return false;
-    }
-}
-
-export async function Validte_Token_Mail(token: string) {
-    const jsonContent = await readMailsFromFile();
-    const obj = jsonContent.find((obj: any) => obj.token === token);
-    if (obj === undefined) {
-        console.log(obj)
-        throw new Error('Token not found');
-    }
-    if (obj) {
-        obj.socket  =  MapSocket_tokens.get(token);
-        if (obj.socket === undefined) {
-            return obj;
-        }
-        return obj;
-    } else {
-        throw new Error('Token not found');
-    }
-}
-
-export async function deleteToken_Mail(token: string) {
-    const jsonContent = await readMailsFromFile();
-    const obj = jsonContent.find((obj: any) => obj.token === token);
-    if (obj) {
-        const index = jsonContent.indexOf(obj);
-        jsonContent.splice(index, 1);
-        await fs.writeFile(file_path, JSON.stringify(jsonContent, null, 2));
-    } else {
-        throw new Error('Token not found');
-    }
-}
 
 // PostgreSQL-Related Functions
 
@@ -86,45 +26,7 @@ export async function SearchForToken(token: string) {
     }
 }
 
-export default async function GetUser(token: string) {
-    const result = await db.query('SELECT * FROM users WHERE id = $1', [token]);
-    console.log(result.rows[0]);
-    if (result.rows.length > 0) {
-        return result.rows[0];
-    }
-}
 
-export async function setNewUser(LastName: string, FirstName: string, Email: string, PhoneNumber: string, Username: string, Password: string) {
-    try {
-        const hashedPassword = bcrypt.hashSync(Password, 10);
-        await db.query(
-            'INSERT INTO Users (FirstName, LastName, Email, PhoneNumber, Username, Password) VALUES ($1, $2, $3, $4, $5, $6)',
-            [FirstName, LastName, Email, PhoneNumber, Username, hashedPassword]
-        );
-
-        const result = await db.query('SELECT id FROM Users WHERE Username = $1', [Username]);
-        return result.rows[0]?.id;
-    } catch (error) {
-        console.error('Error inserting new user:', error);
-        throw error;
-    }
-}
-
-export async function Handle_Login_user(username: string, password: string, res: Response) {
-    console.log(username);
-    const pass = await db.query('SELECT password, id FROM users WHERE username = $1', [username]);
-    if (pass.rows.length === 0) {
-        return res.status(400).json({ message: 'Invalid username or password' });
-    }
-
-    const ismatch = await bcrypt.compare(password, pass.rows[0].password);
-    console.log('Password match:', ismatch);
-    if (!ismatch) {
-        return res.status(400).json({ message: 'Invalid username or password' });
-    } else {
-        return res.status(200).json({ id: pass.rows[0].id });
-    }
-}
 
 export async function ifUserEmailExist(Email: string) {
     const result = await db.query('SELECT * FROM users WHERE email = $1', [Email]);
@@ -141,18 +43,7 @@ export async function ifUserUsernameExist(username: string) {
     }
 }
 
-export async function set_user_Tags(tags: string[], token: string) {
-    for (let i = 0; i < tags.length; i++) {
-        const result = await db.query(
-            'INSERT INTO Preference (userid, tagid) VALUES ($1, (SELECT id FROM tags WHERE tagname = $2))',
-            [token, tags[i]]
-        );
-        console.log(result.rows);
-    }
-    console.log('tags are ' + tags);
-    console.log('length is ' + tags.length);
-    console.log('token is ' + token);
-}
+
 
 export async function UpdateUserPassword(Username: string, Password: string) {
     const hashedPassword = bcrypt.hashSync(Password, 10);
@@ -166,6 +57,9 @@ export async function UpdateUserPassword(Username: string, Password: string) {
         console.log('Password updated');
     }
 }
+
+
+
 
 export async function UpdateUserEmail(Username: string, Email: string) {
     const result = await db.query(
@@ -264,11 +158,7 @@ Select * from users where id in (select userid from Preference where tagid in (s
     return result.rows;
 }
 
-export async function GetUsersBycloseLocation (token: string) {
-    const result = await db.query(`
-Select * from users where locations in (select locations from users where id = $1)`, [token]);
-    return result.rows;
-}
+
 
 export async function GetUsersByAge (token: string, minage: number, maxage: number) {
     const result = await db.query(`
@@ -278,25 +168,3 @@ export async function GetUsersByAge (token: string, minage: number, maxage: numb
 
 
 
-
-
-
-
-
-
-export async function Update_photo_profile(token: string, photo: string) {
-    const result = await db.query('UPDATE users SET profileimg = $1 WHERE id = $2', [photo, token]);
-    if (result.rowCount === 0) {
-        throw new Error('User not found');
-    }
-}
-
-
-export async function Update_pictures(token: string, pictures: string) {
-        const result = await db.query(
-            'INSERT INTO Pictures (userid, picture) VALUES ($1, $2)',
-            [token, pictures]
-        );
-        console.log(result.rows);
-    
-}
