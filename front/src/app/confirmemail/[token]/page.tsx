@@ -5,6 +5,7 @@ import axios from "axios";
 import socket from '../../socket';
 import { useEffect, useState } from "react";
 import  remote  from 'electron';
+import { headers } from "next/headers";
 
 
 const ConfirmEmail: React.FC = () => {
@@ -25,7 +26,11 @@ const ConfirmEmail: React.FC = () => {
             console.log(email);
            await  axios.post('http://localhost:4000/confirmemail', 
             {
-                token: token
+                headers: {
+                    'Content-Type': 'application/json',
+                    'authorization': 'Bearer ' + token,
+                },
+
             })
             .then((res) => {
                 console.log(res);

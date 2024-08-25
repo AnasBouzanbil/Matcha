@@ -1,5 +1,6 @@
 
 const bcrypt = require('bcrypt');
+import { generateJwtToken } from '../..';
 import db from '../../conf/db.conf';
 
 import { Response } from 'express';
@@ -18,6 +19,9 @@ export async function Handle_Login_user(username: string, password: string, res:
     if (!ismatch) {
         return res.status(400).json({ message: 'Invalid username or password' });
     } else {
-        return res.status(200).json({ id: pass.rows[0].id });
+        let token = await generateJwtToken(pass.rows[0].id);
+        console.log('Token:', token );
+
+        return res.status(200).json({ id: token });
     }
 }

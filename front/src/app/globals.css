@@ -120,6 +120,12 @@ body {
   color: #888888;
 }
 
+
+input
+{
+  color:#000000;
+}
+
 .animate-label input:valid + label,
 .animate-label input:focus + label {
   bottom: 30px;

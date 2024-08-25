@@ -23,13 +23,23 @@ export const Loginside = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.post('http://localhost:4000/login', { username, password });
+            const response = await axios.post('http://localhost:4000/login', { username, password },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                }
+            });
 
             if (response.status === 200) {
                 console.log(response.data.id)
                 localStorage.setItem('token', response.data.id);
                 router.push('/profile');
             }
+            else if(response.status === 409){
+                toast.error('Invalid or expired token');
+                router.push('/welcome');
+              }
         } catch (error: any) {
             if (error.response.status === 400) {
                 toast.error('Password incorrect');
@@ -221,7 +231,15 @@ const SignupSide: React.FC = () => {
             password: formData.get('password'),
         };
         console.log(data);
-        axios.post('http://localhost:4000/user', data)
+        axios.post('http://localhost:4000/user', data,
+        {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+
+            }
+        }
+        )
             .then(response => {
                 if (response.status === 200) {
                     alert('done');

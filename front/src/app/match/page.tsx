@@ -2,6 +2,8 @@
 import react, { useState } from 'react'
 
 import './page.css'
+import { useRouter } from 'next/router'
+
 import {Navbar} from '../Navbar'
 
 
@@ -26,8 +28,8 @@ import {
   faChevronLeft,
   faSignal,
   faBatteryThreeQuarters,
-  faYoutubePlay
 } from '@fortawesome/free-solid-svg-icons';
+import toast from 'react-hot-toast';
 
 interface CardData {
   name: string;
@@ -40,14 +42,35 @@ interface CardData {
 
 export function Cards() {
   const [cardsData, setCardsData] = useState<CardData[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     // Fetch data for the cards
-    fetch('https://api.example.com/cards') // Replace with your API endpoint
-      .then(response => response.json())
-      .then((data: CardData[]) => setCardsData(data))
-      .catch(error => console.error('Error fetching data:', error));
-  }, []);
+    fetch('https://api.example.com/cards', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + localStorage.getItem('jwt'),
+      },
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error('Network response was not ok');
+        }
+        else if(res.status === 409){
+          toast.error('Invalid or expired token');
+          router.push('/welcome');
+        }
+        return res.json();
+      })
+      .then((data) => {
+        setCardsData(data);
+      })
+      .catch((error) => {
+        console.error('There was a problem with the fetch operation:', error);
+      });
+
+     }, []);
 
   useEffect(() => {
     // Initialize HammerJS after the cards have been rendered
@@ -162,7 +185,6 @@ export function Cards() {
         <div className="topbar">
           <div className="topbar-left">
             <div className="clock">00:00</div>
-            <FontAwesomeIcon icon={faYoutubePlay} />
           </div>
           <div className="topbar-middle">
             <div className="camera"></div>

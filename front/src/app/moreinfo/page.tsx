@@ -253,7 +253,16 @@ export function BasicInfo({ setIsSignUp }: BasicInfoProps) {
         bio: bio,
         token: token,
         OtherGender : OtherGender,
-      });
+        
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'authorization': 'Bearer ' + token,
+        },
+      }
+      
+    );
       toast.success('Information submitted successfully.');
       setIsSignUp(true);
     } catch (error : any) {

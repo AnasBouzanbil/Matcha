@@ -12,10 +12,6 @@ import express, {Request, Response} from 'express';
 
 const file_path ="../DB/db.json";
 
-
-// PostgreSQL-Related Functions
-
-
 export async function SearchForToken(token: string) {
     console.log("token is " + token);
     const result = await db.query('SELECT * FROM users WHERE id = $1', [token]);

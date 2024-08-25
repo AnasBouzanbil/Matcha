@@ -24,3 +24,5 @@ const io = new Server(server, {
       await Handle_usernmae_availability(socket, username);
     });
   });
+
+  export default io;

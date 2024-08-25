@@ -14,6 +14,13 @@ CREATE TABLE IF NOT EXISTS Users (
     profileimg TEXT
 );
 
+
+
+CREATE TABLE IF NOT EXISTS Follow (
+    id SERIAL PRIMARY KEY,
+    followed_id INT REFERENCES Users(id),
+    follower_id INT REFERENCES Users(id)
+);
 -- Create Pictures table
 CREATE TABLE IF NOT EXISTS Pictures (
     id SERIAL PRIMARY KEY,
