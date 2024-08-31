@@ -30,8 +30,6 @@ const Title = ()=>{
 const Home = () => {
   return (
     <div>
-
-      <Navbar />
           <main className="flex pt-[5%] flex-col  Home ">
              <Title/>
              <button className='btn'

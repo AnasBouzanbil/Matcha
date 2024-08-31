@@ -1,13 +1,13 @@
 // pages/login.js
 'use client'
-import { useEffect, useState } from 'react';
+import { useEffect,useContext, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import socket from '../socket';
-
+import { UserContext } from '../layout';
 import './page.css';
 
 
@@ -18,6 +18,8 @@ export const Loginside = () => {
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const router = useRouter();
+    const { user, setUser } = useContext(UserContext); // Access the UserContext
+
 
     const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -27,13 +29,27 @@ export const Loginside = () => {
             {
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem('token')
                 }
             });
 
             if (response.status === 200) {
-                console.log(response.data.id)
-                localStorage.setItem('token', response.data.id);
+                const data = response.data;
+                alert('Images uploaded successfully');
+    
+                setUser({
+                    name: `${data.user.firstname} ${data.user.lastname}`,
+                    age: data.user.age,
+                    username : data.user.username,
+                    email: data.user.email,
+                    phonenumber: data.user.phonenumber,
+                    location: data.user.location,
+                    bio: data.user.bio,
+                    gender: data.user.gender,
+                    images: data.pics,
+                    profilepics: data.user.profileimg,
+                    socket: socket,
+                });
+                localStorage.setItem("token", data.token);
                 router.push('/profile');
             }
             else if(response.status === 409){
@@ -149,6 +165,7 @@ const SignupSide: React.FC = () => {
             setEmailConfirmed(true);
             setEmailInputFocused(false);
         });
+        console.log(localStorage.getItem('token'));
 
         socket.on('validateusername', (code) => {
             if (code === 200) {

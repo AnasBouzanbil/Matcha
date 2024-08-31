@@ -2,15 +2,18 @@
 
 import './page.css'; // Ensure this includes your Tailwind setup
 import axios from 'axios';
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
+import { UserContext } from '../layout';
+import socket from '../socket';
 
 function Page() {
     const [images, setImages] = useState<string[]>(['', '', '']);
     const [files, setFiles] = useState<File[]>([]);
     const [profilePic, setProfilePic] = useState<File | null>(null);
     const router = useRouter();
+    const { user, setUser } = useContext(UserContext); // Access the UserContext
 
     const handleFileChange = (index: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -46,49 +49,57 @@ function Page() {
     };
 
     const handleUpload = async () => {
-        let token = localStorage.getItem('token') || '';
+        const token = localStorage.getItem('token') || '';
         try {
-
             if (profilePic) {
                 const profilePicFormData = new FormData();
                 profilePicFormData.append('file', profilePic);
-                await axios.post('http://localhost:4000/profile', profilePicFormData,
-                {
+                await axios.post('http://localhost:4000/profile', profilePicFormData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
-                        'Authorization': 'Bearer ' + token
-                    }
+                        'Authorization': `Bearer ${token}`,
+                    },
                 });
-
             }
+
             const formData = new FormData();
-            // change the nam eof file to stary with the data currente 
-            let filed ;
             files.forEach((file) => {
-                filed = new File([file], Date.now() + '-' +  file.name);
+                const filed = new File([file], Date.now() + '-' + file.name);
                 formData.append('file', filed);
-            }
-            );
-            await axios.post('http://localhost:4000/upload_pictures', formData,
-                {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                        'aurthorization': 'Bearer ' + token
-                    }
-                });
-                alert('Images uploaded successfully');
-                
+            });
 
-                router.push('/profile');
-            }
-            catch (error) {
-                alert('An error occurred ' + error);
-                console.error(error);
-            }
+            const response = await axios.post('http://localhost:4000/upload_pictures', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            const data = response.data;
+            alert('Images uploaded successfully');
+
+            setUser({
+                name: `${data.user.firstname} ${data.user.lastname}`,
+                age: data.user.age,
+                username : data.user.username,
+                email: data.user.email,
+                phonenumber: data.user.phonenumber,
+                location: data.user.location,
+                bio: data.user.bio,
+                gender: data.user.gender,
+                images: data.pics,
+                profilepics: data.user.profileimg,
+                socket: socket,
+            });
+
+            router.push('/profile');
+        } catch (error) {
+            alert('An error occurred: ' + error);
+            console.error(error);
+        }
     };
-
     return (
-        <div className="flex flex-col items-center p-4 space-y-4">
+        <div className="flex flex-col items-center mt-2 p-4 space-y-4">
             {/* Profile Picture */}
             <div className="w-full max-w-md flex flex-col items-center">
                 <div className="w-full flex justify-center mb-4">

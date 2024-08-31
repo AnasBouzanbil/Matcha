@@ -2,6 +2,7 @@ import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
+import { Request, Response } from 'express';
 import dotenv from 'dotenv';
 
 import userRoute from './api/user/user';
@@ -14,6 +15,7 @@ import LocationRoute from './api/userData/location/location';
 import Userinforoute from './routes/userinfo.route';
 import imagesroute from './api/images/images';
 
+import { Handle_email_check, Handle_email_confirmation, Handle_usernmae_availability } from './api/email/email.services';
 
 
 
@@ -62,13 +64,13 @@ export async function generateJwtToken(userId: any) {
   return jwt.sign({ userId }, secret, { expiresIn: '10h' });
 }
 
-export function authorizeToken(req: any, res: any, next: any) {
-  console.log(req.headers);
+export function authorizeToken(req: any, res: Response, next: any) {
   const token1 = req.headers.authorization;
   if (!token1) {
     return res.status(401).json({ error: 'Token is required' });
   }
   const token = token1.startsWith('Bearer ') ? token1.slice(7) : token1;
+
   jwt.verify(token, secret, (err: any, decoded: any) => {
     if (err) {
       if (err.name === 'TokenExpiredError') {
@@ -79,6 +81,7 @@ export function authorizeToken(req: any, res: any, next: any) {
       }
     }
     req.body.token = decoded.userId;
+    req.token = decoded.userId;
     next();
   });
 }
@@ -111,10 +114,30 @@ app.post('/decode-token', (req, res) => {
 const server = createServer(app);
 
 
+const io = new Server(server, {
+  cors: {
+    origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
+
+
+  },
+});
+
+io.on('connection', (socket) => {
+  socket.on('emailcheck', async (email) => {
+    await Handle_email_check (socket, email);
+  });
+
+  socket.on('emailverifieddone', async (token) => {
+    await Handle_email_confirmation(socket, token);
+  });
+
+  socket.on('AvailableUsername', async (username) => {
+    await Handle_usernmae_availability(socket, username);
+  });
+});
 server.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });
-
 
 
 

@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt/');
 
 export default async function GetUser(token: string) {
     const result = await db.query('SELECT * FROM users WHERE id = $1', [token]);
-    console.log(result.rows[0]);
+    console.log('GetUser result:', result.rows[0]);
     if (result.rows.length > 0) {
         return result.rows[0];
     }

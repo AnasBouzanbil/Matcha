@@ -9,7 +9,7 @@ import { generateJwtToken } from '../..';
 export async function Handle_Get_User(req: Request, res: Response) {
 	try {
 		const { token } = req.body;
-    console.log(token);
+
 		var data = await SearchForToken(token);
 		if (data) {
       data = await GetUser(token);
@@ -48,7 +48,9 @@ export async function Handle_Delete_user(req: Request, res: Response) {
       if (username_exist) return res.status(403).send('UserAlready exist with the username');
       if (phonenumber_exist) return res.status(403).send('UserAlready exist with the Phonenumber');
       let token = await setNewUser(lastName , firstName , email , phonenumber , username , password);
-      var  token1 = generateJwtToken(token);
+      var  token1 =  await generateJwtToken(token);
+      
+      console.log('the generated token is ' + token1);
       
   		res.status(200).send(token1);
 
@@ -77,21 +79,14 @@ interface AllData{
 export async function Handle_Get_All_Function(req : Request, res : Response ) 
 {
   try {
-    console.log('hello');
-    const authHeader = req.headers.authorization;
 
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).send('Authorization header missing or invalid');
-    }
-
-    // Get the token by removing 'Bearer ' prefix
-    const token = authHeader.split(' ')[1];
-    console.log(token)
+    const token = req.body.token;
   await SearchForToken(token);
   const data1 = await GetUser(token);
   const tags = await GetUserTags(token);
   const pics = await GetImages(token);
   delete data1.id;
+  delete data1.password;
   const alluserdata : AllData =  {
     user   : data1,
     pics : pics,

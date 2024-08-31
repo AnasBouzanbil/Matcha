@@ -13,7 +13,6 @@ import express, {Request, Response} from 'express';
 const file_path ="../DB/db.json";
 
 export async function SearchForToken(token: string) {
-    console.log("token is " + token);
     const result = await db.query('SELECT * FROM users WHERE id = $1', [token]);
     if (result.rows.length > 0) {
         return result.rows[0];

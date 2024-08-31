@@ -5,17 +5,21 @@ import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import './navbar.css';
+interface ChildComponentProps {
+  setCount: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
-export function Navbar() {
+export function Navbar({isitauth} : any , {setCount} : ChildComponentProps){
   const buttonRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const backToTopRef = useRef<HTMLDivElement>(null);
+  
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const router = useRouter();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    setIsLoggedIn(!!token); // Set to true if token exists
+    setIsLoggedIn(!!token);
 
     const handleNavButtonClick = () => {
       if (buttonRef.current && menuRef.current) {
@@ -74,7 +78,7 @@ export function Navbar() {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    setIsLoggedIn(false);
+    setCount(false);
     toast.success('Logged out successfully');
     router.push('/');
   };
@@ -103,7 +107,7 @@ export function Navbar() {
               </a>
             </li>
             <li className="navbar-item no-mob">
-              {isLoggedIn ? (
+              {isitauth ? (
                 <a className="navbar-item-inner" onClick={handleLogout}>
                   <span><i className='uil uil-user'></i> Logout</span>
                 </a>

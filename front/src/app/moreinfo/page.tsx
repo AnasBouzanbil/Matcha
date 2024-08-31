@@ -91,6 +91,7 @@ const InterestsComponent = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'authorization': 'Bearer ' + token,
         },
         body: JSON.stringify({
           token,

@@ -12,7 +12,7 @@ router.get('/user',authorizeToken, async(req : Request, res : Response)=>{
     Handle_Get_User(req, res);
 })
 
-router.post('/user', authorizeToken , async(req : Request, res : Response)=>{
+router.post('/user' , async(req : Request, res : Response)=>{
     Handle_Post_User(req, res);
 })
 

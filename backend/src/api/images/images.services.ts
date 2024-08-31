@@ -4,6 +4,11 @@ import { NextFunction } from 'express';
 import { SearchForToken } from '../../services/insertingData';
 import { GetImages, GetProfileImage, InserteProfileImage, InsertImages } from './image.orm';
 import express from 'express';
+import { stringify } from 'querystring';
+import { json } from 'stream/consumers';
+import { HandleGetUserTag } from '../tags/Tags.services';
+import { GetUserTags, set_user_Tags } from '../tags/Tags.orm';
+import GetUser from '../user/user.orm';
 
 export const router = Router();
 
@@ -20,8 +25,7 @@ export const upload = multer({ storage: storage });
 
 export async function validateUser(req: Request, res: Response, next: NextFunction) {
     try {
-        let token = req.headers.token as string;
-        console.log(token);
+        let token = req.body.token;
         if (!token) {
             return res.status(400).send('Token is required');
         }
@@ -32,9 +36,17 @@ export async function validateUser(req: Request, res: Response, next: NextFuncti
     }
 }
 
-export async function handleUploadPictures(req: Request, res: Response) {
+
+interface UserData {
+    user: any,
+    pics : any,
+    tags : any
+}
+
+export async function handleUploadPictures(req: any, res: Response) {
     try {
-        let token = req.headers.token as string;
+        let token = req.token;
+        console.log('token in function handleUploadPictures:', token);
         const files = req.files as Express.Multer.File[];
         if (!files) {
             return res.status(400).send('No files uploaded');
@@ -42,26 +54,34 @@ export async function handleUploadPictures(req: Request, res: Response) {
 
         const images = files.map((file) => file.filename);
         await InsertImages(token, images);
+        const user = await GetUser(token);
+        const tags = await GetUserTags(token);
+        const pics = await GetImages(token);
+        delete user.id;
+        delete user.password;
+        var userval : UserData = {
+            user : user,
+            tags : tags,
+            pics :pics
+        };
+        res.status(200).send(userval);
 
-        res.send('Images uploaded successfully');
     } catch (error) {
         console.error(error);
         res.status(400).send('An error occurred while uploading images');
     }
 }
 
-export async function handleProfileUpload(req: Request, res: Response) {
+export async function handleProfileUpload(req: any, res: Response) {
     try {
-        let token = req.headers.token as string;
+        let token = req.token;
+        console.log('token in function handleProfileUpload:', token);
         const file = req.file as Express.Multer.File;
-
         if (!file) {
             return res.status(400).send('No file uploaded');
         }
-
         const image = file.filename;
         await InserteProfileImage(token, image);
-
         res.send('Profile picture uploaded successfully');
     } catch (error) {
         console.error(error);

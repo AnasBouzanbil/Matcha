@@ -5,6 +5,7 @@ import db from '../../conf/db.conf';
 
 export async function InserteProfileImage(token: string, image: string) {
     try {
+        console.log('InserteProfileImage token:', token + ' image is ' + image);
         await db.query('update users set profileimg = $1 where id = $2', [image, token]);
     } catch (error) {
         throw error;
