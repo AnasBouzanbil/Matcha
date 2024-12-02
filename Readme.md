@@ -33,3 +33,9 @@
 - **Node.js** installed
 - **Docker** installed
 - **PostgreSQL** running locally or on a server
+
+
+
+### Note
+
+the project is still being implemented
