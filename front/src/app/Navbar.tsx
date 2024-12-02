@@ -9,7 +9,7 @@ interface ChildComponentProps {
   setCount: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export function Navbar({isitauth} : any , {setCount} : ChildComponentProps){
+export function Navbar({isitauth} : any , {setCount} : any){
   const buttonRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const backToTopRef = useRef<HTMLDivElement>(null);
@@ -120,64 +120,23 @@ export function Navbar({isitauth} : any , {setCount} : ChildComponentProps){
           </ul>
         </div>
       </nav>
-      <div id="menu" ref={menuRef}>
-        <div className="menu-left-space"></div>
-        <div className="menu-left">
-          <h3>General</h3>
-          <ul className="menu-items">
-            <li className="menu-item">
-              <a className="menu-item-inner" href="#">
-                <span><i className='uil uil-home-alt'></i> Home</span>
-              </a>
-            </li>
-            <li className="menu-item">
-              <a className="menu-item-inner" href="#">
-                <span><i className='uil uil-comment-image'></i> Forum</span>
-              </a>
-            </li>
-            <li className="menu-item">
-              <a className="menu-item-inner" href="#">
-                <span><i className="uil uil-shopping-bag"></i> Store</span>
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div className="menu-center">
-          <h3>Useful Links</h3>
-          <ul className="menu-items">
-            <li className="menu-item">
-              <a className="menu-item-inner" href="#">
-                <span><i className="uil uil-bookmark"></i> Tutorials</span>
-              </a>
-            </li>
-            <li className="menu-item">
-              <a className="menu-item-inner" href="#">
-                <span><i className="uil uil-map-marker-info"></i> Dynmap</span>
-              </a>
-            </li>
-            <li className="menu-item">
-              <a className="menu-item-inner" href="#">
-                <span><i className='uil uil-server-alt'></i> Servers</span>
-              </a>
-            </li>
-          </ul>
-        </div>
+      <div className="menu" ref={menuRef}>
         <div className="menu-right">
-          <h3>Admin Tools</h3>
+          <h3>User</h3>
           <ul className="menu-items">
             <li className="menu-item">
               <a className="menu-item-inner" href="#">
-                <span><i className="uil uil-lightbulb"></i> Control Panel</span>
+                <span><i className="uil uil-lightbulb"></i> Settings</span>
               </a>
             </li>
             <li className="menu-item">
               <a className="menu-item-inner" href="#">
-                <span><i className="uil uil-brackets-curly"></i> Code Editor</span>
+                <span><i className="uil uil-brackets-curly"></i> About Us</span>
               </a>
             </li>
             <li className="menu-item">
               <a className="menu-item-inner" href="#">
-                <span><i className="uil uil-window"></i> Info & Status</span>
+                <span><i className="uil uil-window"></i>Licence</span>
               </a>
             </li>
           </ul>

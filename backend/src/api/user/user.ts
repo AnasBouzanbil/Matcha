@@ -21,6 +21,7 @@ router.delete('/user', authorizeToken , async(req : Request, res : Response)=>{
 })
 
 router.get('/alluser', authorizeToken , async (req: Request, res : Response) =>{
+    console.log("All user route");
     Handle_Get_All_Function(req, res);
 }
 );

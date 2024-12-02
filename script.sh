@@ -1,6 +1,14 @@
+./rm.sh
 
-docker-compose up -d  
+sudo docker compose up -d  
 sleep 3
+
+
+pkill -f "npm run dev"\
+pkill -f "npm run dev"
+
+pkill -9 4000
+pkill -9 3000
 
 cd front 
 npm run dev &

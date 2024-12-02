@@ -68,14 +68,14 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loaded, setloaded] = useState(true);
 
   const [user, setUser] = useState<UserProps>({
     name: "",
     age: 0,
     email: "",
-    username : '',
+    username : '', 
 
     phonenumber: "",
     location: "",
@@ -98,6 +98,7 @@ export default function RootLayout({
             },
           });
           const data = await response.json();
+          console.log(data);
           setUser({
             name: `${data.user.firstname} ${data.user.lastname}`,
             age: data.user.age,
@@ -130,7 +131,7 @@ export default function RootLayout({
   return (
     <>
     {
-      loaded ? (
+      !loaded ? (
         <Looad/>
       ) : (
             <UserContext.Provider value={{ user, setUser }}>
