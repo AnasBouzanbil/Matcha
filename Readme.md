@@ -28,6 +28,15 @@ Matcha is built using a modern full-stack architecture to ensure high performanc
 
 ---
 
+## Project structure
+
+| Folder or file | Purpose |
+| --- | --- |
+| [front](./front/) | Next.js frontend |
+| [backend](./backend/) | Express and TypeScript backend |
+| [DB](./DB/) | Database files |
+| [docker-compose.yml](./docker-compose.yml) | Docker Compose configuration |
+
 ## Getting Started
 
 Follow these instructions to set up the project locally for development and testing.
@@ -42,7 +51,10 @@ Ensure you have the following installed on your local machine:
 ### Installation and Setup
 
 1. **Clone the repository:**
-   Download the source code to your local development environment.
+   ```bash
+   git clone https://github.com/AnasBouzanbil/Matcha.git
+   cd Matcha
+   ```
 
 2. **Start the database:**
    Navigate to the project root and launch the PostgreSQL database using Docker Compose:
@@ -51,10 +63,23 @@ Ensure you have the following installed on your local machine:
    ```
 
 3. **Install dependencies:**
-   Navigate into the respective frontend and backend directories to install the required Node.js packages.
+   ```bash
+   npm install --prefix backend
+   npm install --prefix front
+   ```
 
 4. **Run the development servers:**
-   Start the Express backend API and the Next.js frontend application to begin development.
+   After configuring the database connection and any required environment variables, run the backend:
+   ```bash
+   npm run dev --prefix backend
+   ```
+
+   In a second terminal at the repository root, run the frontend:
+   ```bash
+   npm run dev --prefix front
+   ```
+
+   These commands use the scripts in each folder's `package.json`. A complete environment-variable reference is still needed.
 
 ---
 
